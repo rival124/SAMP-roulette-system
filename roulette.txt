@@ -1,0 +1,302 @@
+/* ------------------------------------------------------------- [ Roulette ] */
+new bool:rollStatus[MAX_PLAYERS] = false;
+new bool:rollSpin[MAX_PLAYERS] = false;
+new rollTimer[MAX_PLAYERS];
+new rollStop[MAX_PLAYERS];
+new rollObjects[MAX_PLAYERS][10];
+new rollNumber[MAX_PLAYERS];
+new rollNumbers[MAX_PLAYERS];
+new Text:rol_TD[3];
+new PlayerText:rol_PTD[MAX_PLAYERS][1];
+new PlayerText:rol_slot_PTD[MAX_PLAYERS][10];
+#define max_roll_slot 10
+
+
+// onplayerconnect
+	// roll
+	rol_slot_PTD[playerid][0] = CreatePlayerTextDraw(playerid, 231.0000, 189.2222, ""); // пусто
+	PlayerTextDrawTextSize(playerid, rol_slot_PTD[playerid][0], 39.0000, 37.0000);
+	PlayerTextDrawAlignment(playerid, rol_slot_PTD[playerid][0], 1);
+	PlayerTextDrawColor(playerid, rol_slot_PTD[playerid][0], -1);
+	PlayerTextDrawBackgroundColor(playerid, rol_slot_PTD[playerid][0], -298120193);
+	PlayerTextDrawFont(playerid, rol_slot_PTD[playerid][0], 5);
+	PlayerTextDrawSetProportional(playerid, rol_slot_PTD[playerid][0], 0);
+	PlayerTextDrawSetShadow(playerid, rol_slot_PTD[playerid][0], 0);
+	PlayerTextDrawSetPreviewModel(playerid, rol_slot_PTD[playerid][0], 500);
+	PlayerTextDrawSetPreviewRot(playerid, rol_slot_PTD[playerid][0], 0.0000, 0.0000, 0.0000, 1.0000);
+	PlayerTextDrawSetPreviewVehCol(playerid, rol_slot_PTD[playerid][0], 1, 1);
+
+	rol_slot_PTD[playerid][1] = CreatePlayerTextDraw(playerid, 231.0000, 230.9111, ""); // пусто
+	PlayerTextDrawTextSize(playerid, rol_slot_PTD[playerid][1], 39.0000, 37.0000);
+	PlayerTextDrawAlignment(playerid, rol_slot_PTD[playerid][1], 1);
+	PlayerTextDrawColor(playerid, rol_slot_PTD[playerid][1], -1);
+	PlayerTextDrawBackgroundColor(playerid, rol_slot_PTD[playerid][1], -298120193);
+	PlayerTextDrawFont(playerid, rol_slot_PTD[playerid][1], 5);
+	PlayerTextDrawSetProportional(playerid, rol_slot_PTD[playerid][1], 0);
+	PlayerTextDrawSetShadow(playerid, rol_slot_PTD[playerid][1], 0);
+	PlayerTextDrawSetPreviewModel(playerid, rol_slot_PTD[playerid][1], 500);
+	PlayerTextDrawSetPreviewRot(playerid, rol_slot_PTD[playerid][1], 0.0000, 0.0000, 0.0000, 1.0000);
+	PlayerTextDrawSetPreviewVehCol(playerid, rol_slot_PTD[playerid][1], 1, 1);
+
+	rol_slot_PTD[playerid][2] = CreatePlayerTextDraw(playerid, 231.0000, 271.9778, ""); // пусто
+	PlayerTextDrawTextSize(playerid, rol_slot_PTD[playerid][2], 39.0000, 37.0000);
+	PlayerTextDrawAlignment(playerid, rol_slot_PTD[playerid][2], 1);
+	PlayerTextDrawColor(playerid, rol_slot_PTD[playerid][2], -1);
+	PlayerTextDrawBackgroundColor(playerid, rol_slot_PTD[playerid][2], -298120193);
+	PlayerTextDrawFont(playerid, rol_slot_PTD[playerid][2], 5);
+	PlayerTextDrawSetProportional(playerid, rol_slot_PTD[playerid][2], 0);
+	PlayerTextDrawSetShadow(playerid, rol_slot_PTD[playerid][2], 0);
+	PlayerTextDrawSetPreviewModel(playerid, rol_slot_PTD[playerid][2], 500);
+	PlayerTextDrawSetPreviewRot(playerid, rol_slot_PTD[playerid][2], 0.0000, 0.0000, 0.0000, 1.0000);
+	PlayerTextDrawSetPreviewVehCol(playerid, rol_slot_PTD[playerid][2], 1, 1);
+
+	rol_slot_PTD[playerid][3] = CreatePlayerTextDraw(playerid, 272.0000, 271.9778, ""); // пусто
+	PlayerTextDrawTextSize(playerid, rol_slot_PTD[playerid][3], 39.0000, 37.0000);
+	PlayerTextDrawAlignment(playerid, rol_slot_PTD[playerid][3], 1);
+	PlayerTextDrawColor(playerid, rol_slot_PTD[playerid][3], -1);
+	PlayerTextDrawBackgroundColor(playerid, rol_slot_PTD[playerid][3], -298120193);
+	PlayerTextDrawFont(playerid, rol_slot_PTD[playerid][3], 5);
+	PlayerTextDrawSetProportional(playerid, rol_slot_PTD[playerid][3], 0);
+	PlayerTextDrawSetShadow(playerid, rol_slot_PTD[playerid][3], 0);
+	PlayerTextDrawSetPreviewModel(playerid, rol_slot_PTD[playerid][3], 500);
+	PlayerTextDrawSetPreviewRot(playerid, rol_slot_PTD[playerid][3], 0.0000, 0.0000, 0.0000, 1.0000);
+	PlayerTextDrawSetPreviewVehCol(playerid, rol_slot_PTD[playerid][3], 1, 1);
+
+	rol_slot_PTD[playerid][4] = CreatePlayerTextDraw(playerid, 313.0000, 271.9778, ""); // пусто
+	PlayerTextDrawTextSize(playerid, rol_slot_PTD[playerid][4], 39.0000, 37.0000);
+	PlayerTextDrawAlignment(playerid, rol_slot_PTD[playerid][4], 1);
+	PlayerTextDrawColor(playerid, rol_slot_PTD[playerid][4], -1);
+	PlayerTextDrawBackgroundColor(playerid, rol_slot_PTD[playerid][4], -298120193);
+	PlayerTextDrawFont(playerid, rol_slot_PTD[playerid][4], 5);
+	PlayerTextDrawSetProportional(playerid, rol_slot_PTD[playerid][4], 0);
+	PlayerTextDrawSetShadow(playerid, rol_slot_PTD[playerid][4], 0);
+	PlayerTextDrawSetPreviewModel(playerid, rol_slot_PTD[playerid][4], 500);
+	PlayerTextDrawSetPreviewRot(playerid, rol_slot_PTD[playerid][4], 0.0000, 0.0000, 0.0000, 1.0000);
+	PlayerTextDrawSetPreviewVehCol(playerid, rol_slot_PTD[playerid][4], 1, 1);
+
+	rol_slot_PTD[playerid][5] = CreatePlayerTextDraw(playerid, 354.5000, 271.9778, ""); // пусто
+	PlayerTextDrawTextSize(playerid, rol_slot_PTD[playerid][5], 39.0000, 37.0000);
+	PlayerTextDrawAlignment(playerid, rol_slot_PTD[playerid][5], 1);
+	PlayerTextDrawColor(playerid, rol_slot_PTD[playerid][5], -1);
+	PlayerTextDrawBackgroundColor(playerid, rol_slot_PTD[playerid][5], -298120193);
+	PlayerTextDrawFont(playerid, rol_slot_PTD[playerid][5], 5);
+	PlayerTextDrawSetProportional(playerid, rol_slot_PTD[playerid][5], 0);
+	PlayerTextDrawSetShadow(playerid, rol_slot_PTD[playerid][5], 0);
+	PlayerTextDrawSetPreviewModel(playerid, rol_slot_PTD[playerid][5], 500);
+	PlayerTextDrawSetPreviewRot(playerid, rol_slot_PTD[playerid][5], 0.0000, 0.0000, 0.0000, 1.0000);
+	PlayerTextDrawSetPreviewVehCol(playerid, rol_slot_PTD[playerid][5], 1, 1);
+
+	rol_slot_PTD[playerid][6] = CreatePlayerTextDraw(playerid, 354.0000, 231.5333, ""); // пусто
+	PlayerTextDrawTextSize(playerid, rol_slot_PTD[playerid][6], 39.0000, 37.0000);
+	PlayerTextDrawAlignment(playerid, rol_slot_PTD[playerid][6], 1);
+	PlayerTextDrawColor(playerid, rol_slot_PTD[playerid][6], -1);
+	PlayerTextDrawBackgroundColor(playerid, rol_slot_PTD[playerid][6], -298120193);
+	PlayerTextDrawFont(playerid, rol_slot_PTD[playerid][6], 5);
+	PlayerTextDrawSetProportional(playerid, rol_slot_PTD[playerid][6], 0);
+	PlayerTextDrawSetShadow(playerid, rol_slot_PTD[playerid][6], 0);
+	PlayerTextDrawSetPreviewModel(playerid, rol_slot_PTD[playerid][6], 500);
+	PlayerTextDrawSetPreviewRot(playerid, rol_slot_PTD[playerid][6], 0.0000, 0.0000, 0.0000, 1.0000);
+	PlayerTextDrawSetPreviewVehCol(playerid, rol_slot_PTD[playerid][6], 1, 1);
+
+	rol_slot_PTD[playerid][7] = CreatePlayerTextDraw(playerid, 354.5000, 189.8444, ""); // пусто
+	PlayerTextDrawTextSize(playerid, rol_slot_PTD[playerid][7], 39.0000, 37.0000);
+	PlayerTextDrawAlignment(playerid, rol_slot_PTD[playerid][7], 1);
+	PlayerTextDrawColor(playerid, rol_slot_PTD[playerid][7], -1);
+	PlayerTextDrawBackgroundColor(playerid, rol_slot_PTD[playerid][7], -298120193);
+	PlayerTextDrawFont(playerid, rol_slot_PTD[playerid][7], 5);
+	PlayerTextDrawSetProportional(playerid, rol_slot_PTD[playerid][7], 0);
+	PlayerTextDrawSetShadow(playerid, rol_slot_PTD[playerid][7], 0);
+	PlayerTextDrawSetPreviewModel(playerid, rol_slot_PTD[playerid][7], 500);
+	PlayerTextDrawSetPreviewRot(playerid, rol_slot_PTD[playerid][7], 0.0000, 0.0000, 0.0000, 1.0000);
+	PlayerTextDrawSetPreviewVehCol(playerid, rol_slot_PTD[playerid][7], 1, 1);
+
+	rol_slot_PTD[playerid][8] = CreatePlayerTextDraw(playerid, 313.5000, 189.8444, ""); // пусто
+	PlayerTextDrawTextSize(playerid, rol_slot_PTD[playerid][8], 39.0000, 37.0000);
+	PlayerTextDrawAlignment(playerid, rol_slot_PTD[playerid][8], 1);
+	PlayerTextDrawColor(playerid, rol_slot_PTD[playerid][8], -1);
+	PlayerTextDrawBackgroundColor(playerid, rol_slot_PTD[playerid][8], -298120193);
+	PlayerTextDrawFont(playerid, rol_slot_PTD[playerid][8], 5);
+	PlayerTextDrawSetProportional(playerid, rol_slot_PTD[playerid][8], 0);
+	PlayerTextDrawSetShadow(playerid, rol_slot_PTD[playerid][8], 0);
+	PlayerTextDrawSetPreviewModel(playerid, rol_slot_PTD[playerid][8], 500);
+	PlayerTextDrawSetPreviewRot(playerid, rol_slot_PTD[playerid][8], 0.0000, 0.0000, 0.0000, 1.0000);
+	PlayerTextDrawSetPreviewVehCol(playerid, rol_slot_PTD[playerid][8], 1, 1);
+
+	rol_slot_PTD[playerid][9] = CreatePlayerTextDraw(playerid, 272.5000, 189.2221, ""); // пусто
+	PlayerTextDrawTextSize(playerid, rol_slot_PTD[playerid][9], 39.0000, 37.0000);
+	PlayerTextDrawAlignment(playerid, rol_slot_PTD[playerid][9], 1);
+	PlayerTextDrawColor(playerid, rol_slot_PTD[playerid][9], -1);
+	PlayerTextDrawBackgroundColor(playerid, rol_slot_PTD[playerid][9], -298120193);
+	PlayerTextDrawFont(playerid, rol_slot_PTD[playerid][9], 5);
+	PlayerTextDrawSetProportional(playerid, rol_slot_PTD[playerid][9], 0);
+	PlayerTextDrawSetShadow(playerid, rol_slot_PTD[playerid][9], 0);
+	PlayerTextDrawSetPreviewModel(playerid, rol_slot_PTD[playerid][9], 500);
+	PlayerTextDrawSetPreviewRot(playerid, rol_slot_PTD[playerid][9], 0.0000, 0.0000, 0.0000, 1.0000);
+	PlayerTextDrawSetPreviewVehCol(playerid, rol_slot_PTD[playerid][9], 1, 1);
+
+	rol_PTD[playerid][0] = CreatePlayerTextDraw(playerid, 312.0000, 237.2889, "Coin:_50"); // пусто
+	PlayerTextDrawLetterSize(playerid, rol_PTD[playerid][0], 0.2300, 1.2515);
+	PlayerTextDrawAlignment(playerid, rol_PTD[playerid][0], 2);
+	PlayerTextDrawColor(playerid, rol_PTD[playerid][0], -1);
+	PlayerTextDrawBackgroundColor(playerid, rol_PTD[playerid][0], 255);
+	PlayerTextDrawFont(playerid, rol_PTD[playerid][0], 2);
+	PlayerTextDrawSetProportional(playerid, rol_PTD[playerid][0], 1);
+	PlayerTextDrawSetShadow(playerid, rol_PTD[playerid][0], 0);
+
+
+// ongamemodeinit
+	// roll
+	rol_TD[0] = TextDrawCreate(223.5000, 178.6443, "LD_SPAC:white"); // пусто
+	TextDrawTextSize(rol_TD[0], 183.0000, 143.0000);
+	TextDrawAlignment(rol_TD[0], 1);
+	TextDrawColor(rol_TD[0], -298120193);
+	TextDrawBackgroundColor(rol_TD[0], 255);
+	TextDrawFont(rol_TD[0], 4);
+	TextDrawSetProportional(rol_TD[0], 0);
+	TextDrawSetShadow(rol_TD[0], 0);
+
+	rol_TD[1] = TextDrawCreate(228.0000, 184.2444, "LD_SPAC:white"); // пусто
+	TextDrawTextSize(rol_TD[1], 171.0000, 130.0000);
+	TextDrawAlignment(rol_TD[1], 1);
+	TextDrawColor(rol_TD[1], -293575681);
+	TextDrawBackgroundColor(rol_TD[1], 255);
+	TextDrawFont(rol_TD[1], 4);
+	TextDrawSetProportional(rol_TD[1], 0);
+	TextDrawSetShadow(rol_TD[1], 0);
+
+	rol_TD[2] = TextDrawCreate(311.5000, 254.0889, "roll"); // пусто
+	TextDrawLetterSize(rol_TD[2], 0.2300, 1.2515);
+	TextDrawTextSize(rol_TD[2], 8.0000, 31.0000);
+	TextDrawAlignment(rol_TD[2], 2);
+	TextDrawColor(rol_TD[2], -1);
+	TextDrawUseBox(rol_TD[2], 1);
+	TextDrawBoxColor(rol_TD[2], -298120193);
+	TextDrawBackgroundColor(rol_TD[2], 255);
+	TextDrawFont(rol_TD[2], 2);
+	TextDrawSetProportional(rol_TD[2], 1);
+	TextDrawSetShadow(rol_TD[2], 0);
+	TextDrawSetSelectable(rol_TD[2], true);
+
+// onplayerclicktextdraw
+	if(clickedid == Text:INVALID_TEXT_DRAW && rollStatus[playerid] == true)
+	    HideRoll(playerid);
+	if(clickedid == rol_TD[2])
+	{
+	    if(rollSpin[playerid] == true) return 1;
+		if(PlayerInfo[playerid][pCoin] <= 0) return SendClientMessage(playerid, -1, "- Tkven Ar Gakvt Sakmarisi Coin");
+	    rollTimer[playerid] = SetTimerEx("rollTime",500,1,"d",playerid);
+	    rollStop[playerid] = random(20);
+	    rollSpin[playerid] = true;
+	    return 1;
+	}
+
+// forward / public
+publics: rollTime(playerid)
+{
+	if(rollNumbers[playerid] >= rollStop[playerid])
+	{
+	    new str[256];
+		new i = rollNumber[playerid];
+	    if(rollObjects[playerid][i] == 1550)
+		{
+		    format(str, 256, "- Tkven Amogividat: Random Money [300.000$ - 500.000.0$]");
+		    SendClientMessage(playerid, -1, str);
+		    PlayerInfo[playerid][pCash] += random(6000000);
+	    }
+	    else if(rollObjects[playerid][i] == 19134)
+		{
+			new randvip = random(3);
+			if(randvip == 0) randvip ++;
+			PlayerInfo[playerid][pDonateRank] = randvip;
+			PlayerInfo[playerid][pVipTime] = getdate() + 5;
+   			format(str, 256, "- Tkven Amogividat: VIP: %s | 5 Dgit",GetVIPName(randvip));
+   			SendClientMessage(playerid, -1, str);
+		}
+		else
+		{
+			format(str, 256, "- Tkven Amogividat: SKIN ID: %d",rollObjects[playerid][i]);
+   			SendClientMessage(playerid, -1, str);
+   			PlayerInfo[playerid][pChar][PlayerInfo[playerid][pViborChar]] = rollObjects[playerid][i];
+   			SetPlayerSkin(playerid, rollObjects[playerid][i]);
+		}
+	
+		rollSpin[playerid] = false;
+		rollNumber[playerid] = 0;
+		rollNumbers[playerid] = 0;
+		SetTimerEx("RolChangeBG",2000,0,"d",playerid);
+	    KillTimer(rollTimer[playerid]);
+	}
+	else
+	{
+	    new i = rollNumber[playerid];
+	    rollNumber[playerid] ++;
+		rollNumbers[playerid] ++;
+		if(rollNumber[playerid] >= max_roll_slot) rollNumber[playerid] = 0;
+		new z = rollNumber[playerid];
+		
+		PlayerTextDrawHide(playerid, rol_slot_PTD[playerid][z]);
+		PlayerTextDrawBackgroundColor(playerid, rol_slot_PTD[playerid][z], -293575681);
+		PlayerTextDrawShow(playerid, rol_slot_PTD[playerid][z]);
+		
+		PlayerTextDrawHide(playerid, rol_slot_PTD[playerid][i]);
+		PlayerTextDrawBackgroundColor(playerid, rol_slot_PTD[playerid][i], -298120193);
+		PlayerTextDrawShow(playerid, rol_slot_PTD[playerid][i]);
+	}
+	return 1;
+}
+publics: RolChangeBG(playerid)
+{
+	for(new i = 0; i < max_roll_slot; i ++)
+	{
+		PlayerTextDrawHide(playerid, rol_slot_PTD[playerid][i]);
+		PlayerTextDrawBackgroundColor(playerid, rol_slot_PTD[playerid][i], -298120193);
+		PlayerTextDrawShow(playerid, rol_slot_PTD[playerid][i]);
+	}
+	return 1;
+}
+
+// command
+CMD:rol(playerid, params[])
+{
+	if(rollStatus[playerid] == false)
+	    ShowRoll(playerid);
+	return 1;
+}
+
+// stocks
+stock ShowRoll(playerid)
+{
+	for(new i = 0; i < max_roll_slot; i ++)
+	{
+	    new randObject = random(10);
+	    if(randObject == 0) rollObjects[playerid][i] = 1550;
+	    else if(randObject == 1) rollObjects[playerid][i] = 1550;
+	    else if(randObject == 2) rollObjects[playerid][i] = 7;
+	    else if(randObject == 3) rollObjects[playerid][i] = 23;
+        else if(randObject == 4) rollObjects[playerid][i] = 109;
+        else if(randObject == 5) rollObjects[playerid][i] = 106;
+        else if(randObject == 6) rollObjects[playerid][i] = 114;
+        else if(randObject == 7) rollObjects[playerid][i] = 175;
+        else if(randObject == 8) rollObjects[playerid][i] = 19134;
+        else if(randObject == 9) rollObjects[playerid][i] = 19134;
+        PlayerTextDrawSetPreviewModel(playerid, rol_slot_PTD[playerid][i], rollObjects[playerid][i]);
+	}
+	new s[50];
+	format(s, 50, "Coin: %d",PlayerInfo[playerid][pCoin]);
+	PlayerTextDrawSetString(playerid, rol_PTD[playerid][0], s);
+	for(new i = 0; i < 3; i ++) TextDrawShowForPlayer(playerid, rol_TD[i]);
+	PlayerTextDrawShow(playerid, rol_PTD[playerid][0]);
+	for(new i = 0; i < max_roll_slot; i ++) PlayerTextDrawShow(playerid, rol_slot_PTD[playerid][i]);
+	rollStatus[playerid] = true;
+	SelectTextDraw(playerid, -1);
+	return 1;
+}
+stock HideRoll(playerid)
+{
+	for(new i = 0; i < 3; i ++) TextDrawHideForPlayer(playerid, rol_TD[i]);
+	PlayerTextDrawHide(playerid, rol_PTD[playerid][0]);
+	for(new i = 0; i < max_roll_slot; i ++) PlayerTextDrawHide(playerid, rol_slot_PTD[playerid][i]);
+	rollStatus[playerid] = false;
+	CancelSelectTextDraw(playerid);
+	return 1;
+}
